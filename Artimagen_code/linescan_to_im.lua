@@ -39,7 +39,40 @@ do
                   count = count + 1
 	          local file = path .. 'linescans/linescan_' .. tostring(sigma*1e-09) .. '_' .. tostring(alpha) .. '_' .. tostring(Xi*1e-09) .. '_' .. tostring(width) .. '_' .. tostring(space) .. '.txt'
                   local lines = lines_from(file)
-                  print(lines[1])
+                  
+	          im = aig_new_image(N/16,N) -- Creation of a new empty image sized 1024x1024
+
+		  background = {}		 -- New empty table for the background
+		  background_density = 8 	 -- background "map" will be 8x8 pixels large
+		  for i = 1, background_density*background_density, 1 do
+  		     table.insert(background, math.random()*(0.2-0.1) + 0.1) -- value for each pixel is randomly generated, value varies from 0.1 to 0.2
+		  end
+		  aig_apply_background_image(im, {background_density, background_density}, background) -- application of the background to the image
+
+		  edge_effect = aig_new_effect("edge", 0.4, 0.5) -- definition of the edge-effect
+		  fine_structure = aig_new_effect("finestructure", 70e-4, 6, 10, 0.95, 1.05) -- definition of the fine structure
+
+		  curves = {} -- new empty table for crves 
+                  for j = 1,2*N,1  do
+   		     k1,v1 =string.match(lines[j], "(%S+),(%S+)")
+   		     k2,v2 = string.match(lines[j+1], "(%S+),(%S+)")
+   		     table.insert(curves, aig_new_curve("segment", {{tonumber(v1),tonumber(k1)}, {tonumber(v2),tonumber(k2)}}))
+		  end
+                  logo_feature = aig_new_feature(curves, {edge_effect, fine_structure}, 0.3) -- composition of the curves and effect into a feature
+		  aig_move_feature(logo_feature, {-10,0}) -- shifting of the feature to the center of the image
+
+		  features = {} -- new empty table for the feature
+		  features[1] = logo_feature -- one only feature is the logo_feature
+
+		  logo_sample = aig_new_sample(N/16, N, features) -- creation if the sample
+		  aig_paint_sample(im, logo_sample) -- painting of the sample to the image
+		  aig_delete_sample(logo_sample) -- sample is no more needed, thus it should be deleted
+		  aig_apply_gaussian_psf(im, 0.5,1,30) -- application of the Gaussian blur
+                  
+                  local output_file = path .. 'original_images/oim_' .. tostring(sigma*1e-09) .. '_' .. tostring(alpha) .. '_' .. tostring(Xi*1e-09) .. '_' .. tostring(width) .. '_' .. tostring(space) .. '.tiff'
+		  aig_save_image(im, output_file,"Rough curve by Narendra Chaudhary") --saving of the image to a file
+		  aig_delete_image(im) -- deletion of the image
+
                   if(count > 10) then return end
                end
             end
