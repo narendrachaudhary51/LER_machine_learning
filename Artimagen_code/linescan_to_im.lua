@@ -24,6 +24,7 @@ function lines_from(file)
   return lines
 end
 
+path = '/home/grads/n/narendra5/Desktop/Programs/LER_machine_learning/'
 math.randomseed(os.time()) -- Initialization of the random number generator with current time as seed
 N = 1024
 
@@ -36,7 +37,7 @@ do
 	       for s = 0,1,1 do
                   space = math.floor(width*2^s)
                   count = count + 1
-	          local file = 'linescans/linescan_' .. tostring(sigma*1e-09) .. '_' .. tostring(alpha) .. '_' .. tostring(Xi*1e-09) .. '_' .. tostring(width) .. '_' .. tostring(space) .. '.txt'
+	          local file = path .. 'linescans/linescan_' .. tostring(sigma*1e-09) .. '_' .. tostring(alpha) .. '_' .. tostring(Xi*1e-09) .. '_' .. tostring(width) .. '_' .. tostring(space) .. '.txt'
                   local lines = lines_from(file)
                   print(lines[1])
                   if(count > 10) then return end
@@ -48,7 +49,7 @@ do
 end
 print (count)
 -- read the file 
-local file = 'linescans/linescan_1.2e-09_0.1_1.1e-08_30_30.txt'
+local file = path .. 'linescans/linescan_1.2e-09_0.1_1.1e-08_30_30.txt'
 local lines = lines_from(file)
 
 
@@ -93,6 +94,6 @@ aig_apply_gaussian_psf(im, 0.5,1,30) -- application of the Gaussian blur
 --aig_apply_noise(im, "gaussian", 0.01)
 
 
-aig_save_image(im, "original_images/oim.tiff","Rough curve by Narendra Chaudhary") --saving of the image to a file
+aig_save_image(im, path .. "original_images/oim.tiff","Rough curve by Narendra Chaudhary") --saving of the image to a file
 aig_delete_image(im) -- deletion of the image
 
