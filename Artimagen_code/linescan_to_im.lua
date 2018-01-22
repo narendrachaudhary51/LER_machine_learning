@@ -29,7 +29,7 @@ math.randomseed(os.time()) -- Initialization of the random number generator with
 N = 1024
 
 count = 0
-do
+
    for sigma = 0.4, 1.8, 0.2 do
       for alpha = 0.1, 0.9, 0.1 do
          for Xi = 6, 40, 1 do
@@ -59,7 +59,10 @@ do
    		     table.insert(curves, aig_new_curve("segment", {{tonumber(v1),tonumber(k1)}, {tonumber(v2),tonumber(k2)}}))
 		  end
                   logo_feature = aig_new_feature(curves, {edge_effect, fine_structure}, 0.3) -- composition of the curves and effect into a feature
-		  aig_move_feature(logo_feature, {-10,0}) -- shifting of the feature to the center of the image
+		  
+                  shift = math.floor(-25 + (width + space/2 + Xi + alpha*10 + sigma*10)%16) 
+                  
+		  aig_move_feature(logo_feature, {shift,0}) -- shifting of the feature 
 
 		  features = {} -- new empty table for the feature
 		  features[1] = logo_feature -- one only feature is the logo_feature
@@ -69,24 +72,28 @@ do
 		  aig_delete_sample(logo_sample) -- sample is no more needed, thus it should be deleted
 		  aig_apply_gaussian_psf(im, 0.5,1,30) -- application of the Gaussian blur
                   
-                  local output_file = path .. 'original_images/oim_' .. tostring(sigma*1e-09) .. '_' .. tostring(alpha) .. '_' .. tostring(Xi*1e-09) .. '_' .. tostring(width) .. '_' .. tostring(space) .. '.tiff'
-		  aig_save_image(im, output_file,"Rough curve by Narendra Chaudhary") --saving of the image to a file
+                  local output_file = path .. 'original_images/oim_' .. tostring(sigma*1e-09) .. '_' .. tostring(alpha) .. '_' .. tostring(Xi*1e-09) .. '_' .. tostring(width) .. '_' .. tostring(space) ..'_'..tostring(-shift)..'.tiff'
+                  local description = 'Image with'..'sigma='..tostring(sigma*1e-09)..' alpha='..tostring(alpha)..' coorelation length='..tostring(Xi*1e-09)..' width='..tostring(width).. ' space='..tostring(space)..' shift='tostring(shift)
+		  aig_save_image(im, output_file,description) --saving of the image to a file
 		  aig_delete_image(im) -- deletion of the image
 
-                  if(count > 10) then return end
+                  --if(count > 3) then return end
                end
             end
          end
       end
    end
-end
+--end
 print (count)
--- read the file 
+
+
+
+
+
+--[[ toggle comment lua 
+
 local file = path .. 'linescans/linescan_1.2e-09_0.1_1.1e-08_30_30.txt'
 local lines = lines_from(file)
-
-
--------------------------------------------------------------
 
 
 im = aig_new_image(N/16,N) -- Creation of a new empty image sized 1024x1024
@@ -129,4 +136,6 @@ aig_apply_gaussian_psf(im, 0.5,1,30) -- application of the Gaussian blur
 
 aig_save_image(im, path .. "original_images/oim.tiff","Rough curve by Narendra Chaudhary") --saving of the image to a file
 aig_delete_image(im) -- deletion of the image
+
+--]]
 
