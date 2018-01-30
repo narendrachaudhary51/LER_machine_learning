@@ -13,7 +13,7 @@ from keras.layers import Dense, Dropout, Activation, Flatten, Conv2D, MaxPooling
 from keras.constraints import max_norm
 from PIL import Image
 import keras.backend as K
-from multi_gpu import make_parallel
+#from multi_gpu import make_parallel
 import time
 
 start = time.time()
@@ -31,7 +31,7 @@ X_val = np.zeros((num_validation,1024,64))
 y_val = np.zeros((num_validation,1024,64))
 
 
-path = '/home/grads/n/narendra5/Desktop/Programs/LER_machine_learning/'
+path = '/scratch/user/narendra5/LER_machine_learning/'
 sigmas = [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
 alphas = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 
@@ -113,8 +113,8 @@ print('Train labels shape: ', y_train.shape)
 print('Validation data shape: ', X_val.shape)
 print('Validation labels shape: ', y_val.shape)
 
-batch_size = 4
-epochs = 1
+batch_size = 8
+epochs = 10
 
 model = Sequential()
 model.add(Conv2D(64, (3, 3), padding='same',
@@ -190,9 +190,9 @@ model.add(Conv2D(1, (3, 3), padding='same'))
 
 model.summary()
 
-G = 1
-if G > 1:
-   model = make_parallel(model,G)
+#G = 1
+#if G > 1:
+#   model = make_parallel(model,G)
 
 
 adam = keras.optimizers.adam(lr=1e-3)
@@ -207,7 +207,7 @@ history = model.fit(X_train, y_train,
               shuffle=True)
 			  
 
-model.save(path + 'models/' +'nnet_test_run_3.h5')
+model.save(path + 'models/' +'nnet_test_run_4.h5')
 del model  # deletes the existing model
 
 
@@ -232,5 +232,5 @@ plt.title('model loss')
 plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.legend(['train', 'validation'], loc='upper left')
-plt.savefig(path + 'models/' + 'nnet_test_run_3.png')
+plt.savefig(path + 'models/' + 'nnet_test_run_4.png')
 
