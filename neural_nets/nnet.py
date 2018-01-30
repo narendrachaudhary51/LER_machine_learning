@@ -16,21 +16,29 @@ import keras.backend as K
 import os.path
 
 #getting the data
-num_training = 10000
-num_validation = 80
+num_training = 9216
+num_validation = 864
 
-X_train = np.zeros((10080,1024,64))
-y_train = np.zeros((10080,1024,64))
+X_train = np.zeros((num_training,1024,64))
+y_train = np.zeros((num_training,1024,64))
+
+X_val = np.zeros((num_validation,1024,64))
+y_val = np.zeros((num_validation,1024,64))
 
 path = '/home/grads/n/narendra5/Desktop/Programs/LER_machine_learning/'
 sigmas = [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
 alphas = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-Xis = range(6,41)
+
+Xis = [6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40]
+Xis.remove(10)					# remove 10, 20 and 30 value (This value will be used to create validation set)
+Xis.remove(20)
+Xis.remove(30)			
+
 widths = [20, 30]
 #noises = [2, 3, 4, 5, 10, 20, 30, 50, 100, 200]
 noises = [2]
-count = 0
 
+count = 0
 for sigma in sigmas:
 	for alpha in alphas:
 		for Xi in Xis:
@@ -52,7 +60,46 @@ for sigma in sigmas:
 						y_train[count] = im
 						count += 1
 						
-print(count)
+print('Training count: ', count)
+
+
+Xis = [10, 20, 30]
+count = 0
+for sigma in sigmas:
+	for alpha in alphas:
+		for Xi in Xis:
+			for width in widths:
+				for s in range(2):
+					for noise in noises:
+						space = math.floor(width*2**s)
+						shift = math.floor(-25 + (width + space/2 + Xi + alpha*10 + sigma*10)%16) 
+						#print(shift,count)
+						original_file = path + 'original_images/oim_' + "{:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '_' + str(-shift) + '.tiff'
+						noisy_file = path + 'noisy_images/nim_' + "{0:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '_' + str(-shift) + '_' + str(noise) + '.tiff'
+						
+						#print(original_file)
+						#if os.path.isfile(original_file):
+						im = np.array(Image.open(original_file))
+						imnoisy = np.array(Image.open(noisy_file))
+
+						X_val[count] = imnoisy
+						y_val[count] = im
+						count += 1
+						
+print('Validation count: ', count)
+
+X_train = X_train/256
+y_train = y_train/256
+
+X_val = X_val/256
+y_val = y_val/256
+
+X_train = np.reshape(X_train,(num_training,1024,64,1))
+y_train = np.reshape(y_train,(num_training,1024,64,1))
+
+X_val = np.reshape(X_val,(num_validation,1024,64,1))
+y_val = np.reshape(y_val,(num_validation,1024,64,1))
+
 
 """
 for i in range(1,51):
@@ -62,7 +109,7 @@ for i in range(1,51):
 		X_train[(i-1)*50+j-1] = imnoisy
 		y_train[(i-1)*50+j-1] = im
 
-"""
+
 
 X_train = np.reshape(X_train,(10080,1024,64,1))
 y_train = np.reshape(y_train,(10080,1024,64,1))
@@ -81,19 +128,10 @@ mask = range(num_training)
 X_train = X_train[mask]
 y_train = y_train[mask]
 
-assert not np.any(np.isnan(X_train))
-assert not np.any(np.isnan(y_train))
+"""
+
 
 print (X_train.dtype)
-#mean_image = np.mean(X_train, axis=0)
-#std_image = np.std(X_train, axis=0)
-
-
-#X_train -= mean_image
-#X_val -= mean_image
-
-#X_train /= std_image
-#X_val   /= std_image
 
 
 print('Train data shape: ', X_train.shape)
@@ -101,7 +139,7 @@ print('Train labels shape: ', y_train.shape)
 print('Validation data shape: ', X_val.shape)
 print('Validation labels shape: ', y_val.shape)
 
-batch_size = 1
+batch_size = 4
 epochs = 1
 
 model = Sequential()
@@ -190,7 +228,8 @@ history = model.fit(X_train, y_train,
               validation_data=(X_val, y_val),
               shuffle=True)
 			  
-model.save('nnet_test_run_1.h5')  # creates a HDF5 file 'my_model.h5'
+model.save('nnet_test_run_2.h5')  # creates a HDF5 file 
+model.save(path + 'models/' +'nnet_test_run_2.h5')
 del model  # deletes the existing model
 
 print(history.history['loss'])
