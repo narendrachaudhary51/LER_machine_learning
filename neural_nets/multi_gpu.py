@@ -1,5 +1,5 @@
 
-from keras.layers import merge
+from keras.layers import concatenate
 from keras.layers.core import Lambda
 from keras.models import Model
 
@@ -42,6 +42,6 @@ def make_parallel(model, gpu_count):
     with tf.device('/cpu:0'):
         merged = []
         for outputs in outputs_all:
-            merged.append(merge(outputs, mode='concat', concat_axis=0))
+            merged.append(concatenate(outputs, axis=0))
             
         return Model(input=model.inputs, output=merged)

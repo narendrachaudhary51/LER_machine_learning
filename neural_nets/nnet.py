@@ -13,7 +13,7 @@ from keras.layers import Dense, Dropout, Activation, Flatten, Conv2D, MaxPooling
 from keras.constraints import max_norm
 from PIL import Image
 import keras.backend as K
-#from multi_gpu import make_parallel
+from multi_gpu import make_parallel
 import time
 
 start = time.time()
@@ -114,7 +114,7 @@ print('Validation data shape: ', X_val.shape)
 print('Validation labels shape: ', y_val.shape)
 
 batch_size = 8
-epochs = 10
+epochs = 1
 
 model = Sequential()
 model.add(Conv2D(64, (3, 3), padding='same',
@@ -190,9 +190,9 @@ model.add(Conv2D(1, (3, 3), padding='same'))
 
 model.summary()
 
-#G = 1
-#if G > 1:
-#   model = make_parallel(model,G)
+G = 2
+if G > 1:
+   model = make_parallel(model,G)
 
 
 adam = keras.optimizers.adam(lr=1e-3)
@@ -207,7 +207,7 @@ history = model.fit(X_train, y_train,
               shuffle=True)
 			  
 
-model.save(path + 'models/' +'nnet_test_run_4.h5')
+model.save(path + 'models/' +'nnet_test_run_3.h5')
 del model  # deletes the existing model
 
 
@@ -232,5 +232,5 @@ plt.title('model loss')
 plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.legend(['train', 'validation'], loc='upper left')
-plt.savefig(path + 'models/' + 'nnet_test_run_4.png')
+plt.savefig(path + 'models/' + 'nnet_test_run_3.png')
 
