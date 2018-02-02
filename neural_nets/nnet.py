@@ -20,9 +20,9 @@ start = time.time()
 
 
 #getting the data
-num_training = 8928
-num_validation = 288
-num_test = 864
+num_training = 89280
+num_validation = 2880
+num_test = 8640
 
 X_train = np.zeros((num_training,1024,64))
 y_train = np.zeros((num_training,1024,64))
@@ -42,8 +42,8 @@ Xis.remove(30)
 Xis.remove(40)		
 
 widths = [20, 30]
-#noises = [2, 3, 4, 5, 10, 20, 30, 50, 100, 200]
-noises = [2]
+noises = [2, 3, 4, 5, 10, 20, 30, 50, 100, 200]
+#noises = [2]
 
 count = 0
 for sigma in sigmas:
@@ -190,7 +190,7 @@ model.add(Conv2D(1, (3, 3), padding='same'))
 
 model.summary()
 
-G = 2
+G = 1
 if G > 1:
    model = make_parallel(model,G)
 

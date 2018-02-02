@@ -9,9 +9,9 @@
 #SBATCH --ntasks=1                 #Request 1 task
 #SBATCH --ntasks-per-node=1        #Request 1 task/core per node
 #SBATCH --mem=64000M                #Request 2560MB (2.5GB) per node
-#SBATCH --output=nnet_gpu2_test_3.%j    #Send stdout/err to "Example1Out.[jobID]"
+#SBATCH --output=full_gpu1_epoch1_run1.%j    #Send stdout/err to "Example1Out.[jobID]"
 
-#SBATCH --gres=gpu:2                 #Request 1 GPU per node can be 1 or 2
+#SBATCH --gres=gpu:1                 #Request 1 GPU per node can be 1 or 2
 #SBATCH --partition=gpu              #Request the GPU partition/queue
 #SBATCH --account=122802427566
 #First Executable Line
