@@ -78,7 +78,7 @@ epochs = 1
 
 model = Sequential()
 model.add(Conv2D(64, (3, 3), padding='same',
-                 input_shape=X_train.shape[1:], activation = 'relu'))
+                 input_shape= (1024,64,1), activation = 'relu'))
 model.add(BatchNormalization(axis=3))
 model.add(Dropout(0.2))
 
@@ -164,8 +164,8 @@ model.compile(loss = 'mean_squared_error',
 # ----------------------------------load training data and train on it --------------------------------------- 
 
 num_training = 8928
-X_train = np.zeros((num_training,1024,64))
-y_train = np.zeros((num_training,1024,64))
+X_train = np.zeros((num_training,1024,64,1))
+y_train = np.zeros((num_training,1024,64,1))
 
 noises = [2, 3, 4, 5, 10, 20, 30, 50, 100, 200]
 
@@ -175,9 +175,10 @@ Xis.remove(20)
 Xis.remove(30)	
 Xis.remove(40)
 
-
 for noise in noises:
 	count = 0
+	#X_train = np.reshape(X_train,(num_training,1024,64))
+	#y_train = np.reshape(y_train,(num_training,1024,64))
 	for sigma in sigmas:
 		for alpha in alphas:
 			for Xi in Xis:
@@ -192,15 +193,19 @@ for noise in noises:
 						im = np.array(Image.open(original_file))
 						imnoisy = np.array(Image.open(noisy_file))
 
+						im = im/256
+						imnoisy = imnoisy/256
+						im = np.reshape(im,(1024,64,1))
+						imnoisy = np.reshape(imnoisy,(1024,64,1))
 						X_train[count] = imnoisy
 						y_train[count] = im
 						count += 1
 	
-	print("Noise set, Training count :",noise, count)
-	X_train = X_train/256
-	y_train = y_train/256
-	X_train = np.reshape(X_train,(num_training,1024,64,1))
-	y_train = np.reshape(y_train,(num_training,1024,64,1))
+	print("noise set, Training count :",noise, count)
+	#X_train = X_train/256
+	#y_train = y_train/256
+	#X_train = np.reshape(X_train,(num_training,1024,64,1))
+	#y_train = np.reshape(y_train,(num_training,1024,64,1))
 	history = model.fit(X_train, y_train, batch_size=batch_size, epochs=1, validation_data=(X_val, y_val), shuffle=True)
 
 
