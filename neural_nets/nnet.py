@@ -15,13 +15,14 @@ from PIL import Image
 import keras.backend as K
 from multi_gpu import make_parallel
 import time
+from random import shuffle
 
 start = time.time()
 
 
 #getting the data
 
-num_validation = 288					# will be 2880 in full set
+num_validation = 2880					# will be 2880 in full set
 num_test = 8640
 
 X_val = np.zeros((num_validation,1024,64))
@@ -33,8 +34,8 @@ sigmas = [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
 alphas = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]	
 
 widths = [20, 30]
-#noises = [2, 3, 4, 5, 10, 20, 30, 50, 100, 200]
-noises = [2]
+noises = [2, 3, 4, 5, 10, 20, 30, 50, 100, 200]
+#noises = [2]
 						
 
 Xis = [20]
@@ -74,7 +75,7 @@ print('Validation labels shape: ', y_val.shape)
 #print('Train labels shape: ', y_train.shape)
 
 batch_size = 8
-epochs = 1
+epochs = 4
 
 model = Sequential()
 model.add(Conv2D(64, (3, 3), padding='same',
@@ -163,7 +164,7 @@ model.compile(loss = 'mean_squared_error',
 
 # ----------------------------------load training data and train on it --------------------------------------- 
 
-num_training = 8928
+num_training = 9920
 X_train = np.zeros((num_training,1024,64,1))
 y_train = np.zeros((num_training,1024,64,1))
 
@@ -175,39 +176,38 @@ Xis.remove(20)
 Xis.remove(30)	
 Xis.remove(40)
 
-for noise in noises:
-	count = 0
-	#X_train = np.reshape(X_train,(num_training,1024,64))
-	#y_train = np.reshape(y_train,(num_training,1024,64))
-	for sigma in sigmas:
-		for alpha in alphas:
-			for Xi in Xis:
-				for width in widths:
-					for s in range(2):
-						space = math.floor(width*2**s)
-						shift = math.floor(-25 + (width + space/2 + Xi + alpha*10 + sigma*10)%16) 
-						
-						original_file = path + 'original_images/oim_' + "{:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '_' + str(-shift) + '.tiff'
-						noisy_file = path + 'noisy_images/nim_' + "{0:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '_' + str(-shift) + '_' + str(noise) + '.tiff'
-						
-						im = np.array(Image.open(original_file))
-						imnoisy = np.array(Image.open(noisy_file))
 
-						im = im/256
-						imnoisy = imnoisy/256
-						im = np.reshape(im,(1024,64,1))
-						imnoisy = np.reshape(imnoisy,(1024,64,1))
-						X_train[count] = imnoisy
-						y_train[count] = im
-						count += 1
-	
-	print("noise set, Training count :",noise, count)
-	#X_train = X_train/256
-	#y_train = y_train/256
-	#X_train = np.reshape(X_train,(num_training,1024,64,1))
-	#y_train = np.reshape(y_train,(num_training,1024,64,1))
-	history = model.fit(X_train, y_train, batch_size=batch_size, epochs=1, validation_data=(X_val, y_val), shuffle=True)
-
+for epoch in range(1,epochs+1):
+	shuffle(alphas)
+	for alpha in alphas:
+		count = 0
+		for sigma in sigmas:
+			for noise in noises:
+				for Xi in Xis:
+					for width in widths:
+						for s in range(2):
+							space = math.floor(width*2**s)
+							shift = math.floor(-25 + (width + space/2 + Xi + alpha*10 + sigma*10)%16) 
+							
+							original_file = path + 'original_images/oim_' + "{:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '_' + str(-shift) + '.tiff'
+							noisy_file = path + 'noisy_images/nim_' + "{0:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '_' + str(-shift) + '_' + str(noise) + '.tiff'
+							
+							im = np.array(Image.open(original_file))
+							imnoisy = np.array(Image.open(noisy_file))
+							
+							im = im/256
+							imnoisy = imnoisy/256
+							im = np.reshape(im,(1024,64,1))
+							imnoisy = np.reshape(imnoisy,(1024,64,1))
+							X_train[count] = imnoisy
+							y_train[count] = im
+							count += 1
+		print("alpha set, Training count :",alpha,',',count)
+		history = model.fit(X_train, y_train, batch_size=batch_size, epochs=1, shuffle=True)
+	print('Running validation now for epoch ' + str(epoch))
+	val_score = model.evaluate(X_val,y_val)
+	print('Validation score:',val_score)
+	model.save(path + 'models/' + 'full_run1_epoch_'+ str(epoch) + '.h5')
 
 #history = model.fit(X_train, y_train,
 #              batch_size=batch_size,
@@ -216,15 +216,15 @@ for noise in noises:
 #              shuffle=True)
 			  
 
-model.save(path + 'models/' +'nnet_test_run_5.h5')
+#model.save(path + 'models/' +'nnet_test_run_5.h5')
 del model  # deletes the existing model
 
 
 print("Execttion Time= ", time.time() - start)
 
 
-print(history.history['loss'])
-print(history.history['val_loss'])
+#print(history.history['loss'])
+#print(history.history['val_loss'])
 
 # summarize history for accuracy
 #plt.plot(history.history['acc'])
