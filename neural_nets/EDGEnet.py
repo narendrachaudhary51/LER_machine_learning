@@ -47,33 +47,38 @@ for sigma in sigmas:
 				for s in range(2):
 					for noise in noises:
 						space = math.floor(width*2**s)
-						shift = math.floor(-25 + (width + space/2 + Xi + alpha*10 + sigma*10)%16) 
-						
+						shift = math.floor(-25 + (width + space/2 + Xi + alpha*10 + sigma*10)%16)
 						linescan_file = path + 'linescans/linescan_' + "{:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '.txt'
-						noisy_file = path + 'noisy_images/nim_' + "{0:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '_' + str(-shift) + '_' + str(noise) + '.tiff'
 						
+						noisy_file = path + 'noisy_images/nim_' + "{0:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '_' + str(-shift) + '_' + str(noise) + '.tiff'
 						linescan = []
 						with open(linescan_file,'r') as f:
-							for line in f:
-								a, b = line.split(',')
-								linescan.append(float(b))
-								linescan = linescan[:2048]
+							for i,line in enumerate(f):
+								if i < 3000:
+									a, b = line.split(',')
+									linescan.append(float(b))
+								else:
+									break
+						linescan = linescan[:2048]
 						leftline = np.array(linescan[:1024])
 						rightline = linescan[1024:]
 						rightline.reverse()
 						rightline = np.array(rightline)
-						imnoisy = np.array(Image.open(noisy_file))
 
+						imnoisy = np.array(Image.open(noisy_file))
+						leftline = leftline + shift
+						rightline = rightline + shift
+						
 						X_val[count] = imnoisy
-						y_val[count,:,0] = leftline
-						y_val[count,:,1] = rightline
+						y_val[count,:,0] = leftline.astype(int)
+						y_val[count,:,1] = rightline.astype(int)
 						count += 1
 print('Validation_count: ',count)
 
 X_val = X_val/256
 
 X_val = np.reshape(X_val,(num_validation,1024,64,1))
-y_val = np.reshape(y_val,(num_validation,2,1024,1))						
+y_val = np.reshape(y_val,(num_validation,1024,2,1))						
 
 print('Validation data shape: ', X_val.shape)
 print('Validation labels shape: ', y_val.shape)
@@ -168,7 +173,7 @@ model.compile(loss = 'mean_squared_error',
 
 num_training = 9920
 X_train = np.zeros((num_training,1024,64,1))
-y_train = np.zeros((num_training,2,1024,1))
+y_train = np.zeros((num_training,1024,2,1))
 
 noises = [2, 3, 4, 5, 10, 20, 30, 50, 100, 200]
 
@@ -188,6 +193,7 @@ for epoch in range(1,epochs+1):
 				for Xi in Xis:
 					for width in widths:
 						for s in range(2):
+							
 							space = math.floor(width*2**s)
 							shift = math.floor(-25 + (width + space/2 + Xi + alpha*10 + sigma*10)%16) 
 							
@@ -198,22 +204,29 @@ for epoch in range(1,epochs+1):
 							imnoisy = np.array(Image.open(noisy_file))
 							imnoisy = imnoisy/256
 							imnoisy = np.reshape(imnoisy,(1024,64,1))
-linescan = []
+							linescan = []
+							#print(linescan_file)
 							with open(linescan_file,'r') as f:
-								for line in f:
-									a, b = line.split(',')
-									linescan.append(float(b))
-									linescan = linescan[:2048]
+								for i,line in enumerate(f):
+									if i < 3000:
+										a, b = line.split(',')
+										linescan.append(float(b))
+									else:
+										break
+							linescan = linescan[:2048]
 							leftline = np.array(linescan[:1024])
 							rightline = linescan[1024:]
 							rightline.reverse()
 							rightline = np.array(rightline)
-							imnoisy = np.array(Image.open(noisy_file))
-
 							
+							leftline = leftline + shift
+							rightline = rightline + shift
+							leftline = np.reshape(leftline,(1024,1))
+							rightline = np.reshape(rightline,(1024,1))
+
 							X_train[count] = imnoisy
-							y_train[count,:,0] = leftline
-							y_train[count,:,1] = rightline
+							y_train[count,:,0] = leftline.astype(int)
+							y_train[count,:,1] = rightline.astype(int)
 							count += 1
 		print("alpha set, Training count :",alpha,',',count)
 		history = model.fit(X_train, y_train, batch_size=batch_size, epochs=1, shuffle=True)
