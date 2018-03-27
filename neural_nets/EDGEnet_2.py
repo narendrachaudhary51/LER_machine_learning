@@ -70,8 +70,8 @@ for sigma in sigmas:
 						rightline = rightline + shift
 						
 						X_val[count] = imnoisy
-						y_val[count,:,0] = leftline.astype(int)
-						y_val[count,:,1] = rightline.astype(int)
+						y_val[count,:,0] = leftline.astype(int)/64
+						y_val[count,:,1] = rightline.astype(int)/64
 						count += 1
 print('Validation_count: ',count)
 
@@ -226,15 +226,15 @@ for epoch in range(1,epochs+1):
 							rightline = np.reshape(rightline,(1024,1))
 
 							X_train[count] = imnoisy
-							y_train[count,:,0] = leftline.astype(int)
-							y_train[count,:,1] = rightline.astype(int)
+							y_train[count,:,0] = leftline.astype(int)/64
+							y_train[count,:,1] = rightline.astype(int)/64
 							count += 1
 		print("alpha set, Training count :",alpha,',',count)
 		history = model.fit(X_train, y_train, batch_size=batch_size, epochs=1, shuffle=True)
 	print('Running validation now for epoch ' + str(epoch))
 	val_score = model.evaluate(X_val,y_val)
 	print('Validation score:',val_score)
-	model.save(path + 'models/' + 'EDGEnet_run_epoch_'+ str(epoch) + '.h5')
+	model.save(path + 'models/' + 'EDGEnet2_run_epoch_'+ str(epoch) + '.h5')
 
 #history = model.fit(X_train, y_train,
 #              batch_size=batch_size,
