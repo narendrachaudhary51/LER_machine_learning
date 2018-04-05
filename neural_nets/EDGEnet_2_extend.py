@@ -86,76 +86,9 @@ print('Validation labels shape: ', y_val.shape)
 	
 
 batch_size = 8
-epochs = 4
+epochs = 8
 
-model = Sequential()
-model.add(Conv2D(64, (3, 3), padding='same',input_shape= (1024,64,1), activation = 'relu'))
-model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
-
-model.add(Conv2D(64, (3, 3), padding='same',activation = 'relu'))
-model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
-
-model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
-model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
-
-model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
-model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
-
-model.add(Conv2D(128, (3, 3), padding='same', strides=(1, 2),activation = 'relu'))
-model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
-
-model.add(Conv2D(128, (3, 3), padding='same', activation = 'relu'))
-model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
-
-model.add(Conv2D(128, (3, 3), padding='same', activation = 'relu'))
-model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
-
-model.add(Conv2D(128, (3, 3), padding='same', activation = 'relu'))
-model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
-
-model.add(Conv2D(256, (3, 3), padding='same', strides=(1, 2), activation = 'relu'))
-model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
-
-model.add(Conv2D(256, (3, 3), padding='same', activation = 'relu'))
-model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
-
-model.add(Conv2D(256, (3, 3), padding='same', strides=(1, 2), activation = 'relu'))
-model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
-
-model.add(Conv2D(256, (3, 3), padding='same', activation = 'relu'))
-model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
-
-model.add(Conv2D(512, (3, 3), padding='same', strides=(1, 2), activation = 'relu'))
-model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
-
-
-model.add(Conv2D(512, (3, 3), padding='same', activation = 'relu'))
-model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
-
-model.add(Conv2D(512, (3, 3), padding='same', strides=(1, 2), activation = 'relu'))
-model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
-
-model.add(Conv2D(512, (3, 3), padding='same', activation = 'relu'))
-model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
-
-model.add(Conv2D(1, (3, 3), padding='same'))
-
+model = load_model(path + 'models/' + 'EDGEnet2_run_epoch_4.h5')
 
 model.summary()
 
@@ -164,7 +97,7 @@ if G > 1:
    model = make_parallel(model,G)
 
 
-adam = keras.optimizers.adam(lr=1e-3)
+adam = keras.optimizers.adam(lr=1e-5)
 
 model.compile(loss = 'mean_squared_error',
               optimizer=adam)
@@ -185,7 +118,7 @@ Xis.remove(30)
 Xis.remove(40)
 
 
-for epoch in range(1,epochs+1):
+for epoch in range(5,epochs+1):
 	shuffle(alphas)
 	for alpha in alphas:
 		count = 0
