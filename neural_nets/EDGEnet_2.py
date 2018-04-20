@@ -22,7 +22,7 @@ start = time.time()
 
 #getting the data
 
-num_validation = 1728         #2880			# will be 2880 in full set
+num_validation = 2880	       #1728		# will be 2880 in full set
 num_test = 8640
 
 X_val = np.zeros((num_validation,1024,64))
@@ -34,8 +34,8 @@ sigmas = [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
 alphas = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]	
 
 widths = [20, 30]
-#noises = [2, 3, 4, 5, 10, 20, 30, 50, 100, 200]
-noises = [2, 3, 4, 5, 10, 20]
+noises = [2, 3, 4, 5, 10, 20, 30, 50, 100, 200]
+#noises = [2, 3, 4, 5, 10, 20]
 						
 
 Xis = [20]
@@ -86,7 +86,7 @@ print('Validation labels shape: ', y_val.shape)
 	
 
 batch_size = 8
-epochs = 7
+epochs = 4
 
 model = Sequential()
 model.add(Conv2D(64, (3, 3), padding='same',input_shape= (1024,64,1), activation = 'relu'))
@@ -166,18 +166,18 @@ if G > 1:
 
 adam = keras.optimizers.adam(lr=1e-3)
 
-model.compile(loss = 'mean_squared_error',
+model.compile(loss = 'mean_absolute_error',
               optimizer=adam)
 
 
 # ----------------------------------load training data and train on it --------------------------------------- 
 
-num_training = 5952         #9920
+num_training = 9920     #5952
 X_train = np.zeros((num_training,1024,64,1))
 y_train = np.zeros((num_training,1024,2,1))
 
-#noises = [2, 3, 4, 5, 10, 20, 30, 50, 100, 200]
-noises = [2, 3, 4, 5, 10, 20]
+noises = [2, 3, 4, 5, 10, 20, 30, 50, 100, 200]
+#noises = [2, 3, 4, 5, 10, 20]
 
 Xis = [6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40]
 Xis.remove(10)			# remove 10, 20, 30 and 40 value (This value will be used to create validation and test set)
@@ -236,7 +236,7 @@ for epoch in range(1,epochs+1):
 	print('Running validation now for epoch ' + str(epoch))
 	val_score = model.evaluate(X_val,y_val)
 	print('Validation score:',val_score)
-	model.save(path + 'models/' + 'EDGEnet2_runhn_epoch_'+ str(epoch) + '.h5')
+	model.save(path + 'models/' + 'EDGEnet2_int_L1_epoch_'+ str(epoch) + '.h5')
 
 #history = model.fit(X_train, y_train,
 #              batch_size=batch_size,

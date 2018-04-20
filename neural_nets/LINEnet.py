@@ -71,8 +71,12 @@ for sigma in sigmas:
 						
 						edgeimage = np.zeros((1024,64))
 						for i in range(1024):
-							edgeimage[i, leftline.astype(int)] = 1
-							edgeimage[i, rightline.astype(int)] = 1
+							if leftline[i] < 0:
+								leftline[i] = 0
+							if rightline[i] > 63:
+								rightline[i] = 63
+							edgeimage[i, leftline[i].astype(int)] = 1
+							edgeimage[i, rightline[i].astype(int)] = 1
 
 						im = np.array(Image.open(original_file))
 						imnoisy = np.array(Image.open(noisy_file))
@@ -225,8 +229,12 @@ for epoch in range(1,epochs+1):
 						
 							edgeimage = np.zeros((1024,64))
 							for i in range(1024):
-								edgeimage[i, leftline.astype(int)] = 1
-								edgeimage[i, rightline.astype(int)] = 1
+								if leftline[i] < 0:
+									leftline[i] = 0
+								if rightline[i] > 63:
+									rightline[i] = 63
+								edgeimage[i, leftline[i].astype(int)] = 1
+								edgeimage[i, rightline[i].astype(int)] = 1
 
 							im = np.array(Image.open(original_file))
 							imnoisy = np.array(Image.open(noisy_file))
