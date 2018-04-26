@@ -166,7 +166,7 @@ if G > 1:
 
 adam = keras.optimizers.adam(lr=1e-3)
 
-model.compile(loss = 'mean_absolute_error',
+model.compile(loss = 'mean_squared_error',
               optimizer=adam)
 
 
@@ -236,7 +236,7 @@ for epoch in range(1,epochs+1):
 	print('Running validation now for epoch ' + str(epoch))
 	val_score = model.evaluate(X_val,y_val)
 	print('Validation score:',val_score)
-	model.save(path + 'models/' + 'EDGEnet2_int_L1_epoch_'+ str(epoch) + '.h5')
+	model.save(path + 'models/' + 'EDGEnet2_int_L2_epoch_'+ str(epoch) + '.h5')
 
 #history = model.fit(X_train, y_train,
 #              batch_size=batch_size,
