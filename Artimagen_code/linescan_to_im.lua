@@ -56,13 +56,15 @@ count = 0
                   for j = 1,2*N,1  do
    		     k1,v1 =string.match(lines[j], "(%S+),(%S+)")
    		     k2,v2 = string.match(lines[j+1], "(%S+),(%S+)")
-   		     table.insert(curves, aig_new_curve("segment", {{tonumber(v1),tonumber(k1)}, {tonumber(v2),tonumber(k2)}}))
+   		     --table.insert(curves, aig_new_curve("segment", {{tonumber(v1),tonumber(k1)}, {tonumber(v2),tonumber(k2)}}))
+
+		     table.insert(curves, aig_new_curve("segment", {{math.floor(v1+0.5),math.floor(k1+0.5)}, {math.floor(v2+0.5),math.floor(k2+0.5)}}))
 		  end
                   logo_feature = aig_new_feature(curves, {edge_effect, fine_structure}, 0.3) -- composition of the curves and effect into a feature
 		  
                   shift = math.floor(-25 + (width + space/2 + Xi + alpha*10 + sigma*10)%16) 
                   
-		  aig_move_feature(logo_feature, {shift,0}) -- shifting of the feature 
+		  aig_move_feature(logo_feature, {shift,-1}) -- shifting of the feature 
 
 		  features = {} -- new empty table for the feature
 		  features[1] = logo_feature -- one only feature is the logo_feature
@@ -72,7 +74,7 @@ count = 0
 		  aig_delete_sample(logo_sample) -- sample is no more needed, thus it should be deleted
 		  aig_apply_gaussian_psf(im, 0.5,1,30) -- application of the Gaussian blur
                   
-                  local output_file = path .. 'original_images/oim_' .. tostring(sigma*1e-09) .. '_' .. tostring(alpha) .. '_' .. tostring(Xi*1e-09) .. '_' .. tostring(width) .. '_' .. tostring(space) ..'_'..tostring(-shift)..'.tiff'
+                  local output_file = path .. 'original_images2/oim_' .. tostring(sigma*1e-09) .. '_' .. tostring(alpha) .. '_' .. tostring(Xi*1e-09) .. '_' .. tostring(width) .. '_' .. tostring(space) ..'_'..tostring(-shift)..'.tiff'
                   local description = 'Image with'..'sigma='..tostring(sigma*1e-09)..' alpha='..tostring(alpha)..' coorelation length='..tostring(Xi*1e-09)..' width='..tostring(width).. ' space='..tostring(space)..' shift='tostring(shift)
 		  aig_save_image(im, output_file,description) --saving of the image to a file
 		  aig_delete_image(im) -- deletion of the image

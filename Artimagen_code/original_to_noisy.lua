@@ -23,14 +23,14 @@ path = '/home/grads/n/narendra5/Desktop/Programs/LER_machine_learning/'
                       
                      space = math.floor(width*2^s)
 		     shift = math.floor(-25 + (width + space/2 + Xi + alpha*10 + sigma*10)%16)
-                     local input_file = path .. 'original_images/oim_' .. tostring(sigma*1e-09) .. '_' .. tostring(alpha) .. '_' .. tostring(Xi*1e-09) .. '_' .. tostring(width) .. '_' .. tostring(space) ..'_'..tostring(-shift)..'.tiff'
+                     local input_file = path .. 'original_images2/oim_' .. tostring(sigma*1e-09) .. '_' .. tostring(alpha) .. '_' .. tostring(Xi*1e-09) .. '_' .. tostring(width) .. '_' .. tostring(space) ..'_'..tostring(-shift)..'.tiff'
 	             
                      im=aig_load_image(input_file);
 
 		     aig_apply_noise(im, "poisson", noise) -- application of Poisson noise
 		     --aig_apply_noise(im, "gaussian", 0.6)
 
-                     local output_file = path .. 'noisy_images/nim_' .. tostring(sigma*1e-09) .. '_' .. tostring(alpha) .. '_' .. tostring(Xi*1e-09) .. '_' .. tostring(width) .. '_' .. tostring(space) ..'_'..tostring(-shift).. '_' ..tostring(noise)..'.tiff'
+                     local output_file = path .. 'noisy_images2/nim_' .. tostring(sigma*1e-09) .. '_' .. tostring(alpha) .. '_' .. tostring(Xi*1e-09) .. '_' .. tostring(width) .. '_' .. tostring(space) ..'_'..tostring(-shift).. '_' ..tostring(noise)..'.tiff'
                      local description = 'Image with'..'sigma='..tostring(sigma*1e-09)..' alpha='..tostring(alpha)..' coorelation length='..tostring(Xi*1e-09)..' width='..tostring(width).. ' space='..tostring(space)..' shift='..tostring(shift).. ' noise_level='..tostring(noise)
 		  
                      aig_save_image(im, output_file, description) --saving of the image to a file
