@@ -49,8 +49,8 @@ for sigma in sigmas:
 						space = math.floor(width*2**s)
 						shift = math.floor(-25 + (width + space/2 + Xi + alpha*10 + sigma*10)%16) 
 						
-						original_file = path + 'original_images/oim_' + "{:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '_' + str(-shift) + '.tiff'
-						noisy_file = path + 'noisy_images/nim_' + "{0:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '_' + str(-shift) + '_' + str(noise) + '.tiff'
+						original_file = path + 'original_images2/oim_' + "{:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '_' + str(-shift) + '.tiff'
+						noisy_file = path + 'noisy_images2/nim_' + "{0:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '_' + str(-shift) + '_' + str(noise) + '.tiff'
 						
 						
 						im = np.array(Image.open(original_file))
@@ -189,8 +189,8 @@ for epoch in range(1,epochs+1):
 							space = math.floor(width*2**s)
 							shift = math.floor(-25 + (width + space/2 + Xi + alpha*10 + sigma*10)%16) 
 							
-							original_file = path + 'original_images/oim_' + "{:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '_' + str(-shift) + '.tiff'
-							noisy_file = path + 'noisy_images/nim_' + "{0:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '_' + str(-shift) + '_' + str(noise) + '.tiff'
+							original_file = path + 'original_images2/oim_' + "{:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '_' + str(-shift) + '.tiff'
+							noisy_file = path + 'noisy_images2/nim_' + "{0:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '_' + str(-shift) + '_' + str(noise) + '.tiff'
 							
 							im = np.array(Image.open(original_file))
 							imnoisy = np.array(Image.open(noisy_file))
@@ -207,7 +207,7 @@ for epoch in range(1,epochs+1):
 	print('Running validation now for epoch ' + str(epoch))
 	val_score = model.evaluate(X_val,y_val)
 	print('Validation score:',val_score)
-	model.save(path + 'models/' + 'full_run1_epoch_'+ str(epoch) + '.h5')
+	model.save(path + 'models/' + 'SEMNet_run2_epoch_'+ str(epoch) + '.h5')
 
 #history = model.fit(X_train, y_train,
 #              batch_size=batch_size,
