@@ -4,21 +4,10 @@ s = dir('C:\courses\DirectedStudies\Datasets\noisy_images\noisy_images\*.tiff');
 I = zeros(1024,64,3);
 
 
-% s(1).name = 'nim_1.2e-09_0.1_1.1e-08_20_20_19_10.tiff';
-% s(2).name = 'nim_1.2e-09_0.1_1.1e-08_20_20_19_100.tiff';
-% s(3).name = 'nim_1.2e-09_0.1_1.1e-08_20_20_19_10.tiff';
-% s(4).name = 'nim_1.2e-09_0.1_1.1e-08_20_20_19_10.tiff';
-% s(5).name = 'nim_1.2e-09_0.1_1.1e-08_20_20_19_10.tiff';
-% s(6).name = 'nim_1.2e-09_0.1_1.1e-08_20_20_19_10.tiff';
-% s(7).name = 'nim_1.2e-09_0.1_1.1e-08_20_20_19_10.tiff';
-% s(8).name = 'nim_1.2e-09_0.1_1.1e-08_20_20_19_10.tiff';
-% s(9).name = 'nim_1.2e-09_0.1_1.1e-08_20_20_19_10.tiff';
-% s(10).name = 'nim_1.2e-09_0.1_1.1e-08_20_20_19_10.tiff';
-
-
 for i = 1 : 30
     filename = strcat('C:\courses\DirectedStudies\Datasets\noisy_images\noisy_images\',s(i).name);
     I(:,:,i) = imread(filename);
+  
 end
 %%
 s = dir('C:\courses\DirectedStudies\Datasets\original_images\original_images\*.tiff');
@@ -68,7 +57,7 @@ edge_detected_images = zeros(size(I));
 for i = 1:10
 %[~, threshold] = edge(filtered_images(:,:,i), 'canny');
 %fudgeFactor = 1;
-edge_detected_images(:,:,i) = edge(I(:,:,i),'canny',[],4);
+edge_detected_images(:,:,i) = edge(I(:,:,i),'canny',[],7);
 
 figure,colormap(gray);
 imagesc(edge_detected_images(:,:,i));
@@ -84,7 +73,7 @@ end
 %%
 %[~, threshold] = edge(orig_img(:,:,1), 'canny',[],3);
 %fudgeFactor = 2;
-BW_orig = edge(orig_img(:,:,1),'',[],3);
+BW_orig = edge(orig_img(:,:,1),'canny',[],5);
 %figure, imshowpair(BWs,filtered_images(:,:,1),'montage');
 figure,colormap(gray)
 imagesc(BW_orig);
@@ -154,7 +143,7 @@ imagesc(BW_Img);
 %%    
 i=1:10
 std_noisy_images_left =std(lineData_images_left(256:768,i))   
-std_noisy_images_right = std(lineData_images_right(256:768,i))
+std_noisy_images_right = std(lineData_images_right(256:768:,i))
 std_orig_image_left = std(line_left_orig(256:768))
 std_orig_image_right = std(line_right_orig(256:768))
 std_predict_image_left = std(line_predict_left(256:768))
