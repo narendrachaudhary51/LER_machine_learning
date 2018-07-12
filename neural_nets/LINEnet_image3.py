@@ -22,11 +22,11 @@ start = time.time()
 
 #getting the data
 
-num_validation = 2880					# will be 2880 in full set
-num_test = 8640
+num_validation = 1440					# will be 2880 in full set
+num_test = 4320
 
-X_val = np.zeros((num_validation,1024,64,1))
-y_val = np.zeros((num_validation,1024,64,2))
+X_val = np.zeros((num_validation,1024,256,1))
+y_val = np.zeros((num_validation,1024,256,2))
 
 
 path = '/scratch/user/narendra5/LER_machine_learning/'
@@ -40,51 +40,55 @@ noises = [2, 3, 4, 5, 10, 20, 30, 50, 100, 200]
 
 Xis = [20]
 count = 0
+s = 1
 for sigma in sigmas:
 	for alpha in alphas:
 		for Xi in Xis:
 			for width in widths:
-				for s in range(2):
-					for noise in noises:
-						space = math.floor(width*2**s)
-						shift = math.floor(-25 + (width + space/2 + Xi + alpha*10 + sigma*10)%16) 
+				for noise in noises:
+					space = math.floor(width*2**s)
+					shift = math.floor(-25 + (width + space/2 + Xi + alpha*10 + sigma*10)%16) 
+					
+					original_file = path + 'original_images3/oim_' + "{:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '_' + str(-shift) + '.tiff'
+					noisy_file = path + 'noisy_images3/nim_' + "{0:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '_' + str(-shift) + '_' + str(noise) + '.tiff'
+					linescan_file = path + 'linescans/linescan_' + "{:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '.txt'
 						
-						original_file = path + 'original_images2/oim_' + "{:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '_' + str(-shift) + '.tiff'
-						noisy_file = path + 'noisy_images2/nim_' + "{0:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '_' + str(-shift) + '_' + str(noise) + '.tiff'
-						linescan_file = path + 'linescans/linescan_' + "{:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '.txt'
-						
-						linescan = []
-						with open(linescan_file,'r') as f:
-							for i,line in enumerate(f):
-								if i < 3000:
-									a, b = line.split(',')
-									linescan.append(float(b))
-								else:
-									break
-						linescan = linescan[:2048]
-						leftline = np.array(linescan[:1024])
-						rightline = linescan[1024:]
-						rightline.reverse()
-						rightline = np.array(rightline)
-						leftline = leftline + shift
-						rightline = rightline + shift
-						
-						edgeimage = np.zeros((1024,64))
+					linescan = []
+					with open(linescan_file,'r') as f:
+						for i,line in enumerate(f):
+							if i < 8192:
+								a, b = line.split(',')
+								linescan.append(float(b))
+							else:
+								break
+					#linescan = linescan[:2048]
+					#leftline = np.array(linescan[:1024])
+					#rightline = linescan[1024:]
+					#rightline.reverse()
+					#rightline = np.array(rightline)
+					#leftline = leftline + shift
+					#rightline = rightline + shift
+					linescan = np.array(linescan)
+					linescan = linescan.round().astype(int)	
+					edgeimage = np.zeros((1024,256))
+					for k in range(8):                                  #for k edges
+						if k%2 == 0:			            #keep even edges same 
+							edge = linescan[k*1024:(k+1)*1024]
+						else:
+							edge = linescan[k*1024:(k+1)*1024].flip()  #flip odd edges
+
 						for i in range(1024):
-							if leftline[i] < 0:
-								leftline[i] = 0
-							if rightline[i] > 63:
-								rightline[i] = 63
-							edgeimage[i, leftline[i].round().astype(int)] = 1
-							edgeimage[i, rightline[i].round().astype(int)] = 1
+							if edge[i] >= 0 or edge[i] <= 255:
+								edgeimage[i, edge[i]] = 1
+								edgeimage[i, edge[i]] = 1
 
-						im = np.array(Image.open(original_file))
-						imnoisy = np.array(Image.open(noisy_file))
+					im = np.array(Image.open(original_file))
+					imnoisy = np.array(Image.open(noisy_file))
 
-						X_val[count,:,:,0] = imnoisy/256
-						y_val[count,:,:,0] = im/256
-						y_val[count,:,:,1] = edgeimage
-						count += 1
+					X_val[count,:,:,0] = imnoisy/256
+					y_val[count,:,:,0] = im/256
+					y_val[count,:,:,1] = edgeimage
+					count += 1
 print('Validation_count: ',count)						
 
 print('Validation data shape: ', X_val.shape)
@@ -100,7 +104,7 @@ epochs = 4
 
 model = Sequential()
 model.add(Conv2D(64, (3, 3), padding='same',
-                 input_shape= (1024,64,1), activation = 'relu'))
+                 input_shape= (1024,256,1), activation = 'relu'))
 model.add(BatchNormalization(axis=3))
 model.add(Dropout(0.2))
 
@@ -182,9 +186,9 @@ model.compile(loss = 'mean_absolute_error',
 
 # ----------------------------------load training data and train on it --------------------------------------- 
 
-num_training = 9920
-X_train = np.zeros((num_training,1024,64,1))
-y_train = np.zeros((num_training,1024,64,2))
+num_training = 4960
+X_train = np.zeros((num_training,1024,256,1))
+y_train = np.zeros((num_training,1024,256,2))
 
 noises = [2, 3, 4, 5, 10, 20, 30, 50, 100, 200]
 
@@ -203,56 +207,52 @@ for epoch in range(1,epochs+1):
 			for noise in noises:
 				for Xi in Xis:
 					for width in widths:
-						for s in range(2):
-							space = math.floor(width*2**s)
-							shift = math.floor(-25 + (width + space/2 + Xi + alpha*10 + sigma*10)%16) 
+						space = math.floor(width*2**s)
+						shift = math.floor(-25 + (width + space/2 + Xi + alpha*10 + sigma*10)%16) 
 							
-							original_file = path + 'original_images2/oim_' + "{:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '_' + str(-shift) + '.tiff'
-							noisy_file = path + 'noisy_images2/nim_' + "{0:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '_' + str(-shift) + '_' + str(noise) + '.tiff'
-							linescan_file = path + 'linescans/linescan_' + "{:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '.txt'
+						original_file = path + 'original_images3/oim_' + "{:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '_' + str(-shift) + '.tiff'
+						noisy_file = path + 'noisy_images3/nim_' + "{0:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '_' + str(-shift) + '_' + str(noise) + '.tiff'
+						linescan_file = path + 'linescans/linescan_' + "{:.2g}".format(sigma*1e-09) + '_' + str(alpha) + '_' + "{0:.2g}".format(Xi*1e-09) + '_' + str(width) + '_' + str(space) + '.txt'
 						
-							linescan = []
-							with open(linescan_file,'r') as f:
-								for i,line in enumerate(f):
-									if i < 3000:
-										a, b = line.split(',')
-										linescan.append(float(b))
-									else:
-										break
-							linescan = linescan[:2048]
-							leftline = np.array(linescan[:1024])
-							rightline = linescan[1024:]
-							rightline.reverse()
-							rightline = np.array(rightline)
-							leftline = leftline + shift
-							rightline = rightline + shift
-						
-							edgeimage = np.zeros((1024,64))
+						linescan = []
+						with open(linescan_file,'r') as f:
+							for i,line in enumerate(f):
+								if i < 8192:
+									a, b = line.split(',')
+									linescan.append(float(b))
+								else:
+									break
+						linescan = np.array(linescan)
+						linescan = linescan.round().astype(int)
+						edgeimage = np.zeros((1024,256))
+						for k in range(8):                                  #for k edges
+							if k%2 == 0:                                #keep even edges same 
+								edge = linescan[k*1024:(k+1)*1024]
+							else:
+								edge = linescan[k*1024:(k+1)*1024].flip()  #flip odd edges
+							
 							for i in range(1024):
-								if leftline[i] < 0:
-									leftline[i] = 0
-								if rightline[i] > 63:
-									rightline[i] = 63
-								edgeimage[i, leftline[i].round().astype(int)] = 1
-								edgeimage[i, rightline[i].round().astype(int)] = 1
+								if edge[i] >= 0 or edge[i] <= 255:
+									edgeimage[i, edge[i]] = 1
+									edgeimage[i, edge[i]] = 1
 
-							im = np.array(Image.open(original_file))
-							imnoisy = np.array(Image.open(noisy_file))
+						im = np.array(Image.open(original_file))
+						imnoisy = np.array(Image.open(noisy_file))
 							
-							im = im/256
-							imnoisy = imnoisy/256
-							#im = np.reshape(im,(1024,64,1))
-							#imnoisy = np.reshape(imnoisy,(1024,64,1))
-							X_train[count,:,:,0] = imnoisy
-							y_train[count,:,:,0] = im
-							y_train[count,:,:,1] = edgeimage
-							count += 1
+						im = im/256
+						imnoisy = imnoisy/256
+						#im = np.reshape(im,(1024,64,1))
+						#imnoisy = np.reshape(imnoisy,(1024,64,1))
+						X_train[count,:,:,0] = imnoisy
+						y_train[count,:,:,0] = im
+						y_train[count,:,:,1] = edgeimage
+						count += 1
 		print("alpha set, Training count :",alpha,',',count)
 		history = model.fit(X_train, y_train, batch_size=batch_size, epochs=1, shuffle=True)
 	print('Running validation now for epoch ' + str(epoch))
 	val_score = model.evaluate(X_val,y_val)
 	print('Validation score:',val_score)
-	model.save(path + 'models/' + 'Linenet_round_L1_epoch_'+ str(epoch) + '.h5')
+	model.save(path + 'models/' + 'Linenet_image3_round_L1_epoch_'+ str(epoch) + '.h5')
 
 
 del model  # deletes the existing model
