@@ -61,21 +61,16 @@ for sigma in sigmas:
 								linescan.append(float(b))
 							else:
 								break
-					#linescan = linescan[:2048]
-					#leftline = np.array(linescan[:1024])
-					#rightline = linescan[1024:]
-					#rightline.reverse()
-					#rightline = np.array(rightline)
-					#leftline = leftline + shift
-					#rightline = rightline + shift
+		
 					linescan = np.array(linescan)
+					linescan = linescan + shift
 					linescan = linescan.round().astype(int)	
 					edgeimage = np.zeros((1024,256))
 					for k in range(8):                                  #for k edges
 						if k%2 == 0:			            #keep even edges same 
 							edge = linescan[k*1024:(k+1)*1024]
 						else:
-							edge = linescan[k*1024:(k+1)*1024].flip()  #flip odd edges
+							edge = np.flip(linescan[k*1024:(k+1)*1024],0)  #flip odd edges
 
 						for i in range(1024):
 							if edge[i] >= 0 or edge[i] <= 255:
@@ -223,13 +218,14 @@ for epoch in range(1,epochs+1):
 								else:
 									break
 						linescan = np.array(linescan)
+						linescan = linescan + shift
 						linescan = linescan.round().astype(int)
 						edgeimage = np.zeros((1024,256))
 						for k in range(8):                                  #for k edges
 							if k%2 == 0:                                #keep even edges same 
 								edge = linescan[k*1024:(k+1)*1024]
 							else:
-								edge = linescan[k*1024:(k+1)*1024].flip()  #flip odd edges
+								edge = np.flip(linescan[k*1024:(k+1)*1024],0)  #flip odd edges
 							
 							for i in range(1024):
 								if edge[i] >= 0 or edge[i] <= 255:
