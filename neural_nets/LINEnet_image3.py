@@ -25,8 +25,8 @@ start = time.time()
 num_validation = 1440					# will be 2880 in full set
 num_test = 4320
 
-X_val = np.zeros((num_validation,1024,256,1))
-y_val = np.zeros((num_validation,1024,256,2))
+X_val = np.zeros((num_validation*4,256,256,1))
+y_val = np.zeros((num_validation*4,256,256,2))
 
 
 path = '/scratch/user/narendra5/LER_machine_learning/'
@@ -73,17 +73,19 @@ for sigma in sigmas:
 							edge = np.flip(linescan[k*1024:(k+1)*1024],0)  #flip odd edges
 
 						for i in range(1024):
-							if edge[i] >= 0 or edge[i] <= 255:
+							if edge[i] >= 0 and edge[i] <= 255:
 								edgeimage[i, edge[i]] = 1
 								edgeimage[i, edge[i]] = 1
 
 					im = np.array(Image.open(original_file))
 					imnoisy = np.array(Image.open(noisy_file))
-
-					X_val[count,:,:,0] = imnoisy/256
-					y_val[count,:,:,0] = im/256
-					y_val[count,:,:,1] = edgeimage
-					count += 1
+					im = im/256
+					imnoisy = imnoisy/256
+					for i in range(4):                            # split image into 4
+						X_val[count + i,:,:,0] = imnoisy[i*256:(i+1)*256]
+						y_val[count + i,:,:,0] = im[i*256:(i+1)*256]
+						y_val[count + i,:,:,1] = edgeimage[i*256:(i+1)*256]
+					count += 4
 print('Validation_count: ',count)						
 
 print('Validation data shape: ', X_val.shape)
@@ -99,7 +101,7 @@ epochs = 4
 
 model = Sequential()
 model.add(Conv2D(64, (3, 3), padding='same',
-                 input_shape= (1024,256,1), activation = 'relu'))
+                 input_shape= (256,256,1), activation = 'relu'))
 model.add(BatchNormalization(axis=3))
 model.add(Dropout(0.2))
 
@@ -182,8 +184,8 @@ model.compile(loss = 'mean_absolute_error',
 # ----------------------------------load training data and train on it --------------------------------------- 
 
 num_training = 4960
-X_train = np.zeros((num_training,1024,256,1))
-y_train = np.zeros((num_training,1024,256,2))
+X_train = np.zeros((num_training*4,256,256,1))
+y_train = np.zeros((num_training*4,256,256,2))
 
 noises = [2, 3, 4, 5, 10, 20, 30, 50, 100, 200]
 
@@ -228,7 +230,7 @@ for epoch in range(1,epochs+1):
 								edge = np.flip(linescan[k*1024:(k+1)*1024],0)  #flip odd edges
 							
 							for i in range(1024):
-								if edge[i] >= 0 or edge[i] <= 255:
+								if edge[i] >= 0 and edge[i] <= 255:
 									edgeimage[i, edge[i]] = 1
 									edgeimage[i, edge[i]] = 1
 
@@ -237,13 +239,13 @@ for epoch in range(1,epochs+1):
 							
 						im = im/256
 						imnoisy = imnoisy/256
-						#im = np.reshape(im,(1024,64,1))
-						#imnoisy = np.reshape(imnoisy,(1024,64,1))
-						X_train[count,:,:,0] = imnoisy
-						y_train[count,:,:,0] = im
-						y_train[count,:,:,1] = edgeimage
-						count += 1
-		print("alpha set, Training count :",alpha,',',count)
+						for i in range(4):                            # split image into 4
+							X_train[count + i,:,:,0] = imnoisy[i*256:(i+1)*256]
+							y_train[count + i,:,:,0] = im[i*256:(i+1)*256]
+							y_train[count + i,:,:,1] = edgeimage[i*256:(i+1)*256]
+						count += 4
+						
+		print("Xi set, Training count :",Xi,',',count)
 		history = model.fit(X_train, y_train, batch_size=batch_size, epochs=1, shuffle=True)
 	print('Running validation now for epoch ' + str(epoch))
 	val_score = model.evaluate(X_val,y_val)
