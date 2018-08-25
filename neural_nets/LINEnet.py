@@ -75,8 +75,8 @@ for sigma in sigmas:
 								leftline[i] = 0
 							if rightline[i] > 63:
 								rightline[i] = 63
-							edgeimage[i, leftline[i].round().astype(int)] = 3
-							edgeimage[i, rightline[i].round().astype(int)] = 3
+							edgeimage[i, leftline[i].round().astype(int)] = 1
+							edgeimage[i, rightline[i].round().astype(int)] = 1
 
 						im = np.array(Image.open(original_file))
 						imnoisy = np.array(Image.open(noisy_file))
@@ -176,7 +176,7 @@ if G > 1:
 
 adam = keras.optimizers.adam(lr=1e-3)
 
-model.compile(loss = 'mean_absolute_error',
+model.compile(loss = 'mean_squared_error',
               optimizer=adam)
 
 
@@ -233,8 +233,8 @@ for epoch in range(1,epochs+1):
 									leftline[i] = 0
 								if rightline[i] > 63:
 									rightline[i] = 63
-								edgeimage[i, leftline[i].round().astype(int)] = 3
-								edgeimage[i, rightline[i].round().astype(int)] = 3
+								edgeimage[i, leftline[i].round().astype(int)] = 1
+								edgeimage[i, rightline[i].round().astype(int)] = 1
 
 							im = np.array(Image.open(original_file))
 							imnoisy = np.array(Image.open(noisy_file))
@@ -252,7 +252,7 @@ for epoch in range(1,epochs+1):
 	print('Running validation now for epoch ' + str(epoch))
 	val_score = model.evaluate(X_val,y_val)
 	print('Validation score:',val_score)
-	model.save(path + 'models/' + 'Linenet_triple_round_L1_epoch_'+ str(epoch) + '.h5')
+	model.save(path + 'models/' + 'Linenet_round_L2_epoch_'+ str(epoch) + '.h5')
 
 
 del model  # deletes the existing model
