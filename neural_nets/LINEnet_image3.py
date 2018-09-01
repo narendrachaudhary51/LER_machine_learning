@@ -177,7 +177,7 @@ if G > 1:
 
 adam = keras.optimizers.adam(lr=1e-3)
 
-model.compile(loss = 'mean_absolute_error',
+model.compile(loss = 'mean_squared_error',
               optimizer=adam)
 
 
@@ -250,7 +250,7 @@ for epoch in range(1,epochs+1):
 	print('Running validation now for epoch ' + str(epoch))
 	val_score = model.evaluate(X_val,y_val)
 	print('Validation score:',val_score)
-	model.save(path + 'models/' + 'Linenet_image3_round_L1_epoch_'+ str(epoch) + '.h5')
+	model.save(path + 'models/' + 'Linenet_image3_round_L2_epoch_'+ str(epoch) + '.h5')
 
 
 del model  # deletes the existing model
