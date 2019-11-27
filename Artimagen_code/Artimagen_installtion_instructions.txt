@@ -1,3 +1,6 @@
+### Please use the linux version 18.04 or less. For later versions use other methods
+### to get gcc-4.8 or g++-4.8
+
 sudo apt-get install libtiff-dev
 sudo apt-get install libfftw3-dev
 sudo apt-get install fftw3
@@ -7,7 +10,7 @@ sudo apt-get install gcc-4.8
 sudo apt-get install g++-4.8 
 
 ### --- stable version install
-CXX="g++-4.8" ./configure    (CXX="g++-6.5" ./configure)
+CXX="g++-4.8" ./configure 
 make
 sudo make install
 
@@ -17,7 +20,7 @@ git clone git://artimagen.git.sourceforge.net/gitroot/artimagen/artimagen
 cd artimagen
 mkdir build
 cd build
-cmake ..
+CXX="g++-4.8" cmake ..
 make
 sudo make install
 
