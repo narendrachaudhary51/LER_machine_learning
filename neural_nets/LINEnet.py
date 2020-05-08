@@ -102,67 +102,67 @@ model = Sequential()
 model.add(Conv2D(64, (3, 3), padding='same',
                  input_shape= (1024,64,1), activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same',activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(2, (3, 3), padding='same'))
 
@@ -252,7 +252,7 @@ for epoch in range(1,epochs+1):
 	print('Running validation now for epoch ' + str(epoch))
 	val_score = model.evaluate(X_val,y_val)
 	print('Validation score:',val_score)
-	model.save(path + 'models/' + 'Linenet_round_L2_epoch_'+ str(epoch) + '.h5')
+	model.save(path + 'models/' + 'Linenet_round_L2_nodrop_epoch_'+ str(epoch) + '.h5')
 
 
 del model  # deletes the existing model

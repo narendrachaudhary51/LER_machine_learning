@@ -25,7 +25,7 @@ function lines_from(file)
 end
 
 -- tests the functions above
-local file = 'linescan_1.7e-09_0.95_2.5e-08.txt'
+local file = '/home/grads/n/narendra5/Desktop/Programs/LER_machine_learning/linescans/linescan_1.4e-09_0.3_3.2e-08_20_40.txt'
 local lines = lines_from(file)
 
 --k,v =string.match(lines[1], "(%d+),(%d+)")
@@ -38,45 +38,62 @@ local lines = lines_from(file)
 --end
 
 
-
 -------------------------------------------------------------
 
 math.randomseed(os.time()) -- Initialization of the random number generator with current time as seed
 
 N = 1024
 
-im = aig_new_image(N,N) -- Creation of a new empty image sized 512x512
+im = aig_new_image(N/4,N/4) -- Creation of a new empty image sized 512x512
 
 background = {} -- New empty table for the background
 background_density = 8 -- background "map" will be 8x8 pixels large
 for i = 1, background_density*background_density, 1 do
-  table.insert(background, math.random()*(0.2-0.1) + 0.1) -- value for each pixel is randomly generated, value varies from 0.1 to 0.2
+  table.insert(background, math.random()*(0.1-0.05) + 0.05) -- value for each pixel is randomly generated, value varies from 0.1 to 0.2
 end
 aig_apply_background_image(im, {background_density, background_density}, background) -- application of the background to the image
 
-edge_effect = aig_new_effect("edge", 0.2, 0.5) -- definition of the edge-effect
+--base = math.random()*0.4 + 0.1
+base = math.random()*0.25 + 0.05
+value_above_base = math.random()*(0.7-base) + 0.3
+coeff = math.random()*0.35 + 0.15
+--edge_effect = aig_new_effect("edge", math.random()*(0.8) + 0.1, math.random()*(0.9-base) + 0.1) -- definition of the edge-effect
+edge_effect = aig_new_effect("edge", coeff, value_above_base) -- definition of the edge-effect
 fine_structure = aig_new_effect("finestructure", 70e-4, 6, 10, 0.95, 1.05) -- definition of the fine structure
+
+print(base, value_above_base, coeff)
 
 curves = {} -- new empty table for crves 
 
+width = 20
+space = 40
+max_lines = 14
+if (width == 20 and space == 20) then max_lines = 14 end
+if (width == 20 and space == 40) then max_lines = 10 end
+if (width == 30 and space == 30) then max_lines = 8 end
+if (width == 30 and space == 60) then max_lines = 6 end
+
+print(max_lines)
 i=1
-while i <= 14*N - 1 do
+while i <= max_lines*N - 1 do
    k1,v1 =string.match(lines[i], "(%d+),(%d+)")
    k2,v2 = string.match(lines[i+1], "(%d+),(%d+)")
    curves[i] = aig_new_curve("segment", {{tonumber(v1),tonumber(k1)}, {tonumber(v2),tonumber(k2)}})
    i = i+1
 end
 
-logo_feature = aig_new_feature(curves, {edge_effect, fine_structure}, 0.3) -- composition of the curves and effect into a feature
+logo_feature = aig_new_feature(curves, {edge_effect, fine_structure}, base) -- composition of the curves and effect into a feature
+
 --aig_move_feature(logo_feature, {60,60}) -- shifting of the feature to the center of the image
 
 features = {} -- new empty table for the feature
 features[1] = logo_feature -- one only feature is the logo_feature
 
-logo_sample = aig_new_sample(N, N, features) -- creation if the sample
+logo_sample = aig_new_sample(N/4, N/4, features) -- creation if the sample
 aig_paint_sample(im, logo_sample) -- painting of the sample to the image
 aig_delete_sample(logo_sample) -- sample is no more needed, thus it should be deleted
-aig_apply_gaussian_psf(im, 0.5,1,30) -- application of the Gaussian blur
+
+aig_apply_gaussian_psf(im, math.random(1,3)*0.5,1,30) -- application of the Gaussian blur
 
 -- definition of the drift/vibration.
 freqs = 8 -- the vib. function will be composed of 8 sine functions
@@ -88,27 +105,27 @@ for i = 1, freqs, 1 do
 end
 
 --aig_apply_vib(im,10000,50,100,0,vibs) -- application of vibrations
-aig_apply_noise(im, "poisson", 2) -- application of Poisson noise
+--aig_apply_noise(im, "poisson", 200) -- application of Poisson noise
 --aig_apply_noise(im, "gaussian", 0.01)
 
 --gaig_preview(im) -- gAIG specific! preview. If running with artimagenl, comment this line out.
-im1 = aig_copy_image(im)
-im2 = aig_copy_image(im)
-im3 = aig_copy_image(im)
-im4 = aig_copy_image(im)
-aig_crop_image(im1,0,0,256,1024)
-aig_crop_image(im2,256,0,512,1024)
-aig_crop_image(im3,512,0,768,1024)
-aig_crop_image(im4,768,0,1024,1024)
+--im1 = aig_copy_image(im)
+--im2 = aig_copy_image(im)
+--im3 = aig_copy_image(im)
+--im4 = aig_copy_image(im)
+--aig_crop_image(im1,0,0,256,1024)
+--aig_crop_image(im2,256,0,512,1024)
+--aig_crop_image(im3,512,0,768,1024)
+--aig_crop_image(im4,768,0,1024,1024)
 
-aig_save_image(im1, "rough_curve1.tiff","Rough curve by Narendra Chaudhary") 
-aig_save_image(im2, "rough_curve2.tiff","Rough curve by Narendra Chaudhary") 
-aig_save_image(im3, "rough_curve3.tiff","Rough curve by Narendra Chaudhary") 
-aig_save_image(im4, "rough_curve4.tiff","Rough curve by Narendra Chaudhary") 
-aig_delete_image(im1)
-aig_delete_image(im2)
-aig_delete_image(im3)
-aig_delete_image(im4)
+--aig_save_image(im1, "rough_curve1.tiff","Rough curve by Narendra Chaudhary") 
+--aig_save_image(im2, "rough_curve2.tiff","Rough curve by Narendra Chaudhary") 
+--aig_save_image(im3, "rough_curve3.tiff","Rough curve by Narendra Chaudhary") 
+--aig_save_image(im4, "rough_curve4.tiff","Rough curve by Narendra Chaudhary") 
+--aig_delete_image(im1)
+--aig_delete_image(im2)
+--aig_delete_image(im3)
+--aig_delete_image(im4)
 
 aig_save_image(im, "rough_curve.tiff","Rough curve by Narendra Chaudhary") --saving of the image to a file
 aig_delete_image(im) -- deletion of the image

@@ -81,70 +81,67 @@ model = Sequential()
 model.add(Conv2D(64, (3, 3), padding='same',
                  input_shape= (1024,64,1), activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same',activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation = 'relu'))
 model.add(BatchNormalization(axis=3))
-model.add(Dropout(0.2))
-
-
-#model.add(Dropout(0.5))
+#model.add(Dropout(0.2))
 
 model.add(Conv2D(1, (3, 3), padding='same'))
 
@@ -207,7 +204,7 @@ for epoch in range(1,epochs+1):
 	print('Running validation now for epoch ' + str(epoch))
 	val_score = model.evaluate(X_val,y_val)
 	print('Validation score:',val_score)
-	model.save(path + 'models/' + 'SEMNet_run2_epoch_'+ str(epoch) + '.h5')
+	model.save(path + 'models/' + 'SEMNet_nodrop_epoch_'+ str(epoch) + '.h5')
 
 #history = model.fit(X_train, y_train,
 #              batch_size=batch_size,

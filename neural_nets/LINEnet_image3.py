@@ -37,6 +37,7 @@ widths = [20, 30]
 noises = [2, 3, 4, 5, 10, 20, 30, 50, 100, 200]
 #noises = [2]
 						
+rand_rotation = True
 
 Xis = [20]
 count = 0
@@ -82,9 +83,15 @@ for sigma in sigmas:
 					im = im/256
 					imnoisy = imnoisy/256
 					for i in range(4):                            # split image into 4
-						X_val[count + i,:,:,0] = imnoisy[i*256:(i+1)*256]
-						y_val[count + i,:,:,0] = im[i*256:(i+1)*256]
-						y_val[count + i,:,:,1] = edgeimage[i*256:(i+1)*256]
+						if rand_rotation == False:
+							X_val[count + i,:,:,0] = imnoisy[i*256:(i+1)*256]
+							y_val[count + i,:,:,0] = im[i*256:(i+1)*256]
+							y_val[count + i,:,:,1] = edgeimage[i*256:(i+1)*256]
+						else:
+							rot = np.random.randint(1,5)
+							X_val[count + i,:,:,0] = np.rot90(imnoisy[i*256:(i+1)*256], k = rot)
+							y_val[count + i,:,:,0] = np.rot90(im[i*256:(i+1)*256], k = rot)
+							y_val[count + i,:,:,1] = np.rot90(edgeimage[i*256:(i+1)*256], k = rot)
 					count += 4
 print('Validation_count: ',count)						
 
@@ -240,9 +247,15 @@ for epoch in range(1,epochs+1):
 						im = im/256
 						imnoisy = imnoisy/256
 						for i in range(4):                            # split image into 4
-							X_train[count + i,:,:,0] = imnoisy[i*256:(i+1)*256]
-							y_train[count + i,:,:,0] = im[i*256:(i+1)*256]
-							y_train[count + i,:,:,1] = edgeimage[i*256:(i+1)*256]
+							if rand_rotation == False:
+								X_train[count + i,:,:,0] = imnoisy[i*256:(i+1)*256]
+								y_train[count + i,:,:,0] = im[i*256:(i+1)*256]
+								y_train[count + i,:,:,1] = edgeimage[i*256:(i+1)*256]
+							else:
+								rot = np.random.randint(1,5)
+								X_train[count + i,:,:,0] = np.rot90(imnoisy[i*256:(i+1)*256], k = rot)
+								y_train[count + i,:,:,0] = np.rot90(im[i*256:(i+1)*256], k = rot)
+								y_train[count + i,:,:,1] = np.rot90(edgeimage[i*256:(i+1)*256], k = rot)
 						count += 4
 						
 		print("Xi set, Training count :",Xi,',',count)
@@ -250,7 +263,7 @@ for epoch in range(1,epochs+1):
 	print('Running validation now for epoch ' + str(epoch))
 	val_score = model.evaluate(X_val,y_val)
 	print('Validation score:',val_score)
-	model.save(path + 'models/' + 'Linenet_image3_round_L2_epoch_'+ str(epoch) + '.h5')
+	model.save(path + 'models/' + 'Linenet_image3_round_L2_rotation_epoch_'+ str(epoch) + '.h5')
 
 
 del model  # deletes the existing model
