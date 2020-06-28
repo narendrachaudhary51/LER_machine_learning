@@ -11,11 +11,12 @@ https://drive.google.com/a/tamu.edu/file/d/1DTbKKd9GSLHMbx_3IxiBzs7LWgT7IusZ/vie
 The linescan dataset can be downloaded from this link - 
 https://drive.google.com/a/tamu.edu/file/d/11LcLFm-cmUwHwLG1HC9Ie0l2vckrsEuc/view?usp=sharing
 
-The Multiple line noisy image dataset can be download from this link - 
-https://drive.google.com/drive/folders/1ShUd_-Dd-FREkFdZxnFEsAG5FsxM9Lvs
+The Multiple line noisy image dataset (Used in LineNet) can be download from this link - 
+https://drive.google.com/file/d/1hfFAumSYvaJtoG-ISrM6ZyGzviF8RjoQ/view?usp=sharing
 
-The Multiple line original image dataset can be downloaded from this link -
-https://drive.google.com/drive/folders/1ShUd_-Dd-FREkFdZxnFEsAG5FsxM9Lvs
+
+The Multiple line original image dataset (Used in LineNet) )can be downloaded from this link -
+https://drive.google.com/file/d/14e4W-sy2MUIBcC66-f9e3xwvXdyk2oBK/view?usp=sharing
 
 The linescans folder has multiple text files that contain the X and Y positions of line edges.
 The images generated from ARTIMAGEN without any noise are in the original_images2 folder. 
